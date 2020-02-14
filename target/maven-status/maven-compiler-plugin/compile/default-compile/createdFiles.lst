@@ -1,0 +1,6 @@
+com\afam\jpa\models\User.class
+com\afam\jpa\models\FullTimeEmployee.class
+com\afam\jpa\models\PartTimeEmployee.class
+com\afam\jpa\models\Task.class
+com\afam\jpa\Starter.class
+com\afam\jpa\models\Employee.class
