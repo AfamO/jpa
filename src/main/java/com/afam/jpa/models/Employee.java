@@ -20,8 +20,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "EMPLOYEE_TYPE")
 public class Employee implements Serializable {
     
     @Id
@@ -30,11 +28,12 @@ public class Employee implements Serializable {
     private int eid;
     private String ename;
     private String deg;
-    private String employeeType;
     private Double salary;
+    //@ManyToOne
+    @OneToOne
+    private Department department;
     
-    @ManyToMany
-    private List<Task> tasks;
+
     
 }
 

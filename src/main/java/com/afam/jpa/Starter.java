@@ -5,14 +5,11 @@
  */
 package com.afam.jpa;
 
-import com.afam.jpa.models.Employee;
-import com.afam.jpa.models.FullTimeEmployee;
-import com.afam.jpa.models.Task;
-import com.afam.jpa.models.User;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import com.afam.jpa.models.*;
+
+import java.util.*;
 import javax.persistence.*;
+import org.apache.commons.lang.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,21 +19,42 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Starter {
-    
-    
+
+    static class TestNullPointer {
+        private String name; 
+        private Long account;
+        public TestNullPointer(String name, Long account){
+            this.name = Objects.requireNonNull(name, "Name must not be null!");
+            this.account = Objects.requireNonNull(account, "acccount must not be null!"); 
+        }
+
+        public  void print()
+        {
+            System.out.println("Conactenated Name == " + this.name.concat("good") + ",  Account Class " + this.account.getClass());
+        }
+    }
+
     public static void main(String [] args) {
-        
+
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
         EntityManager em = emf.createEntityManager();
-        User user = em.find(User.class, 1L); 
-        System.out.println("Found User == " + user);
-
-        queryEmployee(em);
-        //createBulkEmployee(em);
+        //User user = em.find(User.class, 1L);
+        //System.out.println("Found User == " + user);
+        new TestNullPointer(null, 123L).print();
+        System.out.println("Padded String Is ::" + StringUtils.leftPad("bat", 10));
+        //new StaffService().SaveStaffs(em);
+        //queryEmployee(em);
+        Map<String, Double> map = new HashMap<>();
+        map.put("Fee Amount", 12.4);
+        map.put("fee", 33D);
+        System.out.println("Map Is "+map);
+        System.out.println("Fee Amount "+map.get("Fee Amount"));
+        createEmployee_OneToOne(em);
+        //createBulkEmployee_OneToMany(em);
         //saveUser(em);
         //dropUser(em);
         emf.close();
-       
+
     }
     
     static void saveUser(EntityManager em) {
@@ -63,18 +81,127 @@ public class Starter {
         
     }
 
-    static void createBulkEmployee(EntityManager entityManager) {
+    static void createEmployee_OneToOne(EntityManager entityManager) {
         EntityTransaction entityTransaction = entityManager.getTransaction();
         entityTransaction.begin();
-        FullTimeEmployee fullTimeEmployee = new FullTimeEmployee();
+        
+        Employee employee = new Employee();
+        employee.setEid( 1201 );
+        employee.setEname( "Satish" );
+        employee.setSalary(45000.0);
+        employee.setDeg( "Technical Writer" );
+
+        Department department = new Department();
+        department.setName("Development");
+
+        entityManager.persist(department);
+        employee.setDepartment(department);
+        entityManager.persist(employee);
+        
+        
+       
+
+        entityTransaction.commit();
+        //System.out.println("Successfully saved OneToOne Employee To DB " + employee);
+
+        entityManager.close();
+        
+
+    }
+
+    static void createBulkEmployee_OneToMany(EntityManager entityManager) {
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+        List<Employee> employeeList = new ArrayList<>();
+        
+
+        Employee employee = new Employee();
+        employee.setEid( 1201 );
+        employee.setEname( "Gopal" );
+        employee.setSalary(40000d);
+        employee.setDeg( "Technical Manager" );
+        entityManager.persist(employee);
+        employeeList.add(employee);
+
+        employee = new Employee();
+        employee.setEid( 1202 );
+        employee.setEname( "Manisha" );
+        employee.setSalary(40000D);
+        employee.setDeg( "Proof Reader" );
+        
+        entityManager.persist(employee);
+        employeeList.add(employee);
+
+        employee = new Employee();
+        employee.setEid( 1203 );
+        employee.setEname( "Masthanvali" );
+        employee.setSalary(40000d);
+        employee.setDeg( "Technical Writer" );
+        
+        entityManager.persist(employee);
+        employeeList.add(employee);
+
+        employee = new Employee();
+        employee.setEid( 1204 );
+        employee.setEname( "Satish" );
+        employee.setSalary(30000D);
+        employee.setDeg( "Technical Writer" );
+        entityManager.persist(employee);
+        employeeList.add(employee);
+
+        employee = new Employee();
+        employee.setEid( 1205 );
+        employee.setEname( "Krishna" );
+        employee.setSalary(30000d);
+        employee.setDeg( "Technical Writer" );
+        
+        entityManager.persist(employee);
+        employeeList.add(employee);
+
+        employee = new Employee();
+        employee.setEid( 1206 );
+        employee.setEname( "Kiran" );
+        employee.setSalary(35000D);
+        employee.setDeg( "Proof Reader" );
+        
+        entityManager.persist(employee);
+        employeeList.add(employee);
+        
+        Department department = new Department();
+        department.setName("Development");
+        //department.setEmployeeList(employeeList);
+        entityManager.persist(department);
+        Task task1 = new Task("Welcome Visitors", new Date(), false);
+        Task task2 = new Task("Type Marketing Letters", new Date(), false);
+        entityManager.persist(task1);
+        entityManager.persist(task2);
+
+        //employee.setTasks(Arrays.asList(task1,task2 ));
+        entityManager.persist(employee);
+
+
+        entityTransaction.commit();
+        System.out.println("Successfully saved Employee To DB " + employee);
+
+        entityManager.close();
+
+
+    }
+
+    static void createBulkEmployee_ManyToOne(EntityManager entityManager) {
+        EntityTransaction entityTransaction = entityManager.getTransaction();
+        entityTransaction.begin();
+
+        Department department = new Department();
+        department.setName("Development");
+        entityManager.persist(department);
         
         Employee employee = new Employee();
         employee.setEid( 1201 );
         employee.setEname( "Gopal" );
         employee.setSalary(40000d);
         employee.setDeg( "Technical Manager" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+        //employee.setDepartment(department);
         entityManager.persist(employee);
         
         employee = new Employee();
@@ -82,8 +209,7 @@ public class Starter {
         employee.setEname( "Manisha" );
         employee.setSalary(40000D);
         employee.setDeg( "Proof Reader" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+        //employee.setDepartment(department);
         entityManager.persist(employee);
         
         employee = new Employee();
@@ -91,46 +217,42 @@ public class Starter {
         employee.setEname( "Masthanvali" );
         employee.setSalary(40000d);
         employee.setDeg( "Technical Writer" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+        //employee.setDepartment(department);
         entityManager.persist(employee);
-        
+
         employee = new Employee();
         employee.setEid( 1204 );
         employee.setEname( "Satish" );
         employee.setSalary(30000D);
         employee.setDeg( "Technical Writer" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+        //employee.setDepartment(department);
         entityManager.persist(employee);
-        
+
         employee = new Employee();
         employee.setEid( 1205 );
         employee.setEname( "Krishna" );
         employee.setSalary(30000d);
         employee.setDeg( "Technical Writer" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+        //employee.setDepartment(department);
         entityManager.persist(employee);
-        
+
         employee = new Employee();
         employee.setEid( 1206 );
         employee.setEname( "Kiran" );
         employee.setSalary(35000D);
         employee.setDeg( "Proof Reader" );
-        entityManager.persist(fullTimeEmployee);
-        employee.setEmployeeType("Full_Time");
+       // employee.setDepartment(department);
         entityManager.persist(employee);
-        
+
         Task task1 = new Task("Welcome Visitors", new Date(), false);
         Task task2 = new Task("Type Marketing Letters", new Date(), false);
         entityManager.persist(task1);
         entityManager.persist(task2);
-        log.info(" The Id of fullTimeEmployee,Task1, Task2 Is {}, {}, {} :: " + fullTimeEmployee.getId(), task1,  task2);
-        employee.setTasks(Arrays.asList(task1,task2 ));
+        
+        //employee.setTasks(Arrays.asList(task1,task2 ));
         entityManager.persist(employee);
-        
-        
+
+
         entityTransaction.commit();
         System.out.println("Successfully saved Employee " + employee);
 

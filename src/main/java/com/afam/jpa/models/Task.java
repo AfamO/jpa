@@ -37,20 +37,13 @@ public class Task implements Serializable {
     private Date targetDate;
     private Boolean isDone;
     
-    @ManyToMany(mappedBy = "tasks")
-    private List<Employee> employees;
+    //@ManyToMany(mappedBy = "tasks")
+    //private List<Employee> employees;
 
     public Task(String description, Date targetDate, Boolean isDone) {
         this.description = description;
         this.targetDate = targetDate;
         this.isDone = isDone;
-    }
-
-    public Task(String description, Date targetDate, Boolean isDone, List<Employee> employees) {
-        this.description = description;
-        this.targetDate = targetDate;
-        this.isDone = isDone;
-        this.employees = employees;
     }
     
     
