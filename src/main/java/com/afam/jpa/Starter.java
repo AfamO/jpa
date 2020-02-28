@@ -6,9 +6,17 @@
 package com.afam.jpa;
 
 import com.afam.jpa.models.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 import java.util.*;
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import org.apache.commons.lang.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,22 +42,26 @@ public class Starter {
         }
     }
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws FileNotFoundException, ScriptException {
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
         EntityManager em = emf.createEntityManager();
         //User user = em.find(User.class, 1L);
         //System.out.println("Found User == " + user);
-        new TestNullPointer(null, 123L).print();
+        new TestNullPointer("CigaO", 123L).print();
         System.out.println("Padded String Is ::" + StringUtils.leftPad("bat", 10));
+        ScriptEngine scriptEngine = new ScriptEngineManager().getEngineByName("Nashorn");
+        scriptEngine.eval(new FileReader("C:\\Users\\afam.okonkwo\\Documents\\Afam\\helloNashon.js"));
+        //new TeacherService().SaveTeacher(em); //save teacher and corresponding class info.
         //new StaffService().SaveStaffs(em);
         //queryEmployee(em);
+        criteriaQueryEmployee(em);
         Map<String, Double> map = new HashMap<>();
         map.put("Fee Amount", 12.4);
         map.put("fee", 33D);
         System.out.println("Map Is "+map);
         System.out.println("Fee Amount "+map.get("Fee Amount"));
-        createEmployee_OneToOne(em);
+        //createEmployee_OneToOne(em);
         //createBulkEmployee_OneToMany(em);
         //saveUser(em);
         //dropUser(em);
@@ -57,6 +69,32 @@ public class Starter {
 
     }
     
+    static void criteriaQueryEmployee(EntityManager em) {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
+        Root<Employee> from = criteriaQuery.from(Employee.class);
+        
+        
+        //select all records
+         System.out.println("Select all records");
+         CriteriaQuery<Object> select = criteriaQuery.select(from)
+                                        .where(criteriaBuilder.equal(from.get("salary"), 35000))
+                                        ;
+         TypedQuery<Object> typedQuery = em.createQuery(select);
+         List<Object> resultList = typedQuery.getResultList();
+         resultList.stream().map((o) -> (Employee)o).forEachOrdered((e) -> {
+             System.out.println("EID : " + e.getEid() + " Ename : " + e.getEname());
+        });
+         
+       //Ordering the records
+       System.out.println("Select all records by follow ordering");
+       select.orderBy(criteriaBuilder.asc(from.get("ename")));
+       typedQuery = em.createQuery(select);
+       resultList = typedQuery.getResultList();
+       resultList.stream().map((o) -> (Employee)o).forEachOrdered((e) -> {
+             System.out.println("EID : " + e.getEid() + " Ename : " + e.getEname() + "Salary : " +e.getSalary());
+        });
+    }
     static void saveUser(EntityManager em) {
         
         em.getTransaction().begin();
@@ -261,7 +299,7 @@ public class Starter {
         
     }
 
-    static void queryEmployee(EntityManager entityManager) {
+    static void queryEmployeee(EntityManager entityManager) {
         // scalar function
         Query query = entityManager.createQuery("Select UPPER(e.ename) from Employee e");
         List<String> list =  query.getResultList();

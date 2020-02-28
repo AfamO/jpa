@@ -6,7 +6,6 @@
 package com.afam.jpa.models;
 
 import java.io.Serializable;
-import java.util.List;
 import javax.persistence.*;
 
 import lombok.Data;
@@ -29,8 +28,8 @@ public class Employee implements Serializable {
     private String ename;
     private String deg;
     private Double salary;
-    //@ManyToOne
-    @OneToOne
+    @ManyToOne
+    //@OneToOne
     private Department department;
     
 

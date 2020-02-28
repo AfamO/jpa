@@ -1,9 +1,11 @@
 com\afam\jpa\models\Staff_TablePerClass.class
+com\afam\jpa\TeacherService.class
 com\afam\jpa\models\User.class
 com\afam\jpa\Starter$TestNullPointer.class
 com\afam\jpa\models\Staff_Joined.class
 com\afam\jpa\models\NonTeachingStaff.class
 com\afam\jpa\models\Employee.class
+com\afam\jpa\models\Clas.class
 com\afam\jpa\models\Department.class
 com\afam\jpa\models\FullTimeEmployee.class
 com\afam\jpa\models\PartTimeEmployee.class
@@ -11,4 +13,5 @@ com\afam\jpa\models\Task.class
 com\afam\jpa\Starter.class
 com\afam\jpa\models\Staff.class
 com\afam\jpa\StaffService.class
+com\afam\jpa\models\Teacher.class
 com\afam\jpa\models\TeachingStaff.class
